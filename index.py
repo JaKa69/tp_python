@@ -1,7 +1,7 @@
 import sqlite3
 from pathlib import Path
 
-from flask import Flask, render_template, g
+from flask import Flask, render_template, g, request, flash
 
 app = Flask(__name__)
 
@@ -26,8 +26,18 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
-@app.route("/login")
+@app.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        userInDb = query_db('select * from user where username = ?', [username], one=True)
+        if userInDb is None:
+            flash('Invalid username or password')
+        if username == userInDb['username'] and password == userInDb['password']:
+            return render_template('home.html')
+        else:
+            flash('Invalid username or password')
     return render_template('login.html')
 
 @app.route("/")
