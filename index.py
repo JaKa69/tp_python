@@ -1,9 +1,10 @@
 import sqlite3
 from pathlib import Path
 
-from flask import Flask, render_template, g, request, flash
+from flask import Flask, render_template, g, request, flash, session, redirect, url_for
 
 app = Flask(__name__)
+app.secret_key = '8A8kWA0gTvi72Qw1Xs5KLuWF06vZjRhdsFfJ9CDTGGi8XI7MHyX4lgWQGhK0gavXpqiq2Qe6g2bZrJAB3wRPmbQmOtwSRIil2XtpAqkUSv96rVEtfqs2hMFsx8FuWYJdvtSrAMt40LUI7yI6reWXPiifRSTowGplxRBOQvuY0E7BaKOYEEH3tBDfpMkptgApcOwGM2QrTciSorffdmBxffEgMa9HgQuXuUHWOY3h6uygAUk4EHiEPGAUiqYhdZZF'
 
 DATABASE = 'db/database.db'
 
@@ -35,16 +36,36 @@ def login():
         if userInDb is None:
             flash('Invalid username or password')
         if username == userInDb['username'] and password == userInDb['password']:
-            return render_template('home.html')
+            session['username'] = username
+            return redirect(url_for('home'))
         else:
             flash('Invalid username or password')
     return render_template('login.html')
 
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('index'))
+
+@app.route("/register", methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        userInDb = query_db('select * from user where username = ?', [username], one=True)
+        if userInDb is None:
+            userSaved = query_db('INSERT INTO user (username, password) VALUES (?, ?);', [username, password])
+            get_db().commit()
+            return render_template("register.html")
+        else:
+            flash('username already used')
+    return redirect(url_for("home"))
+
 @app.route("/")
-def create_app():
-    for user in query_db('select * from user'):
-        print(user['username'], 'has the id', user['id'])
-    return render_template("home.html")
+def init():
+    if 'username' in session:
+        return redirect(url_for("home"))
+    return redirect(url_for('login'))
 
 
 if not Path(DATABASE).exists():

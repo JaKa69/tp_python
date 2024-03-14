@@ -18,6 +18,7 @@
             font-size: 24px;
         }
         .login-button {
+            margin-right: 15px;
             display: inline-block;
             background-color: #007bff;
             color: white;
@@ -27,11 +28,17 @@
             border: none;
             cursor: pointer;
         }
+        .buttons {
+            display: flex;
+            flex-direction: row;
+        }
     </style>
 </head>
 <body>
     <div class="welcome">Welcome!</div>
-    <!-- Change the href attribute to the URL where your login page is located -->
-    <button onclick="location.href='login';" class="login-button">Se connecter</button>
+    <div class="buttons">
+        <button onclick="location.href='login';" class="login-button">Sign in</button>
+        <button onclick="location.href='register';" class="login-button">Sign up</button>
+    </div>
 </body>
 </html>
