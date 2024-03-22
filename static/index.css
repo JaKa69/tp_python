@@ -76,11 +76,33 @@ body {
 .classement-button {
     background-color: #28a745;
     border-color: #218838;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
 }
 
-.logout-button {
-    background-color: #dc3545;
-    border-color: #bd2130;
+.notifications-button {
+    background-color: #ffe900;
+    border-color: #00ffad;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    position: relative;
+}
+
+.notification-count {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
 }
 
 ul {

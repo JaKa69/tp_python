@@ -8,14 +8,7 @@
     <link rel="stylesheet" href="static/index.css">
 </head>
 <body>
-    <div class="header">
-        <div>
-            connecté en tant que:
-            <b><a href="/profile">{{ session['username'] }}</a></b>
-        </div>
-        <button onclick="location.href='/top_scores';" class="classement-button">Classement</button>
-        <button onclick="location.href='/logout';" class="logout-button">Logout</button>
-    </div>
+    {% include 'header.html' %}
     <div class="content">
         <div class="game-content">
             <canvas id="canvas" width="400" height="400"></canvas>

@@ -6,15 +6,7 @@
     <link rel="stylesheet" href="/static/index.css">
 </head>
 <body>
-    <div class="header">
-        <div>
-            <button onclick="location.href='/home';" class="home-button">Back to home</button>
-            connecté en tant que:
-            <b><a href="/profile">{{ session['username'] }}</a></b>
-        </div>
-        <button onclick="location.href='/top_scores';" class="classement-button">Classement</button>
-        <button onclick="location.href='/logout';" class="logout-button">Logout</button>
-    </div>
+    {% include 'header.html' %}
     <div class="container">
         <h1>Profil de l'utilisateur</h1>
         <div class="user-info">

@@ -29,6 +29,29 @@ def hash_password(password):
     hashed_bytes = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
     return hashed_bytes.decode('utf-8')
 
+def check_and_notify_new_highscore(score, user_id):
+    db = get_db()
+    highest_score = db.execute('SELECT MAX(score) as max_score FROM score').fetchone()
+
+    # Vérifiez si le score maximal actuel existe et si le nouveau score le dépasse
+    if highest_score['max_score'] is None or score > highest_score['max_score']:
+        users = db.execute('SELECT id FROM user').fetchall()
+        for user in users:
+            if user['id'] != user_id:  # Ne pas notifier l'utilisateur ayant battu le record
+                message = 'Un nouveau record a été établi: ' + str(score) + 'pts' if highest_score['max_score'] is not None else 'Le premier score a été enregistré: ' + str(score) + 'pts'
+                db.execute('INSERT INTO notification (user_id, message) VALUES (?, ?)',
+                           (user['id'], message))
+        db.commit()
+
+
+def get_unread_notifications_count():
+    user_id = session['user_id']
+    db = get_db()
+    unread_count = db.execute(
+        'SELECT COUNT(*) FROM notification WHERE user_id = ? AND read = 0',
+        (user_id,)
+    ).fetchone()[0]
+    return unread_count
 
 @app.teardown_appcontext
 def close_connection(exception):
@@ -88,22 +111,24 @@ def register():
 def home():
     db = get_db()
     username = session['username']
+    unread_notifications_count = get_unread_notifications_count()
     topScores = db.execute(
         'SELECT user.username, score.score FROM score JOIN user ON score.user_id = user.id  WHERE user.username = ? ORDER BY score.score DESC LIMIT 10',
         [username]).fetchall()
-    return render_template("home.html", scores=topScores)
+    return render_template("home.html", scores=topScores, unread_notifications_count=unread_notifications_count)
 
 
 @app.route('/profile')
 def profile():
     db = get_db()
     username = request.args.get('username', session['username'])
+    unread_notifications_count = get_unread_notifications_count()
     scores = db.execute(
         'SELECT score.score, score.date FROM score JOIN user ON score.user_id = user.id WHERE user.username = ? ORDER BY score.score DESC',
         [username]
     ).fetchall()
 
-    return render_template('profile.html', username=username, scores=scores)
+    return render_template('profile.html', username=username, scores=scores, unread_notifications_count=unread_notifications_count)
 
 
 @app.route("/add_score", methods=["POST"])
@@ -111,6 +136,7 @@ def add_score():
     score = request.form['score']
     user_id = session['user_id']
 
+    check_and_notify_new_highscore(int(score), user_id)
     db = get_db()
     db.execute(
         'INSERT INTO score (user_id, score) VALUES (?, ?)',
@@ -123,10 +149,11 @@ def add_score():
 @app.route("/top_scores")
 def top_scores():
     db = get_db()
+    unread_notifications_count = get_unread_notifications_count()
     topScores = db.execute(
         'SELECT user.username, score.score FROM score JOIN user ON score.user_id = user.id ORDER BY score.score DESC LIMIT 10'
     ).fetchall()
-    return render_template("top_scores.html", scores=topScores)
+    return render_template("top_scores.html", scores=topScores, unread_notifications_count= unread_notifications_count)
 
 
 @app.route('/change_password', methods=['GET', 'POST'])
@@ -165,6 +192,25 @@ def delete_account():
     session.clear()
     flash('Votre compte a été supprimé avec succès.')
     return redirect(url_for('login'))
+
+
+@app.route('/notifications')
+def notifications():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    db = get_db()
+    user_id = session['user_id']
+    notifications = db.execute('SELECT id, message, timestamp FROM notification WHERE user_id = ? ORDER BY timestamp DESC', (user_id,)).fetchall()
+    return render_template('notifications.html', notifications=notifications)
+
+@app.route('/mark_notification_as_read', methods=['POST'])
+def mark_notification_as_read():
+    notification_id = request.form['notification_id']
+    db = get_db()
+    db.execute('UPDATE notification SET read = 1 WHERE id = ?', (notification_id,))
+    db.commit()
+    return redirect(url_for('notifications'))
 
 
 if not Path(DATABASE).exists():

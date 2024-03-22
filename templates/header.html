@@ -1,0 +1,17 @@
+<div class="header">
+        <div>
+            <button onclick="location.href='/home';" class="home-button">Back to home</button>
+            connecté en tant que:
+            <b><a href="/profile">{{ session['username'] }}</a></b>
+        </div>
+        <button onclick="location.href='/top_scores';" class="classement-button">Classement</button>
+        <div>
+            <button onclick="location.href='/logout';" class="logout-button">Logout</button>
+            <button onclick="location.href='/notifications';" class="notifications-button">
+                Notifications
+                {% if unread_notifications_count > 0 %}
+                    <span class="notification-count">{{ unread_notifications_count }}</span>
+                {% endif %}
+            </button>
+        </div>
+    </div>
