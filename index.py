@@ -158,6 +158,17 @@ def change_password():
 
     return render_template('change_password.html')
 
+@app.route('/delete_account', methods=['POST'])
+def delete_account():
+    username = session['username']
+    db = get_db()
+    db.execute('DELETE FROM score WHERE user_id = (SELECT id FROM user WHERE username = ?)', (username,))
+    db.execute('DELETE FROM user WHERE username = ?', (username,))
+    db.commit()
+    session.clear()
+    flash('Votre compte a été supprimé avec succès.')
+    return redirect(url_for('login'))
+
 
 if not Path(DATABASE).exists():
     with app.app_context():

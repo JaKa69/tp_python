@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Profil de l'utilisateur</title>
-    <link rel="stylesheet" href="/static/index.css"> <!-- Assurez-vous d'avoir un fichier CSS pour styliser votre page -->
+    <link rel="stylesheet" href="/static/index.css">
 </head>
 <body>
     <div class="header">
@@ -21,6 +21,10 @@
             <p>Nom d'utilisateur : {{ username }}</p>
             {% if username == session['username'] %}
                 <button onclick="location.href='/change_password';">Changer le mot de passe</button>
+                <form id="delete-account-form" action="/delete_account" method="post" style="display: none;">
+                    <button type="submit">Supprimer le compte</button>
+                </form>
+                <button onclick="showConfirmationPopup()">Supprimer le compte</button>
             {% endif %}
         </div>
         <h2>Scores des parties</h2>
@@ -41,5 +45,12 @@
             </tbody>
         </table>
     </div>
+    <script>
+        function showConfirmationPopup() {
+        if (confirm("Ceci est irréversible. Êtes-vous sûr de vouloir supprimer le compte?")) {
+            document.getElementById('delete-account-form').submit();
+        }
+    }
+    </script>
 </body>
 </html>
