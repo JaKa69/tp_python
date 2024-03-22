@@ -23,23 +23,13 @@
             border: none;
             cursor: pointer;
         }
-        .home-button {
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            text-decoration: none; /* Remove underline from links */
-            display: inline-block; /* Allow width and height for links */
-        }
         input[type="submit"]:hover { background-color: #0056b3; }
     </style>
 </head>
 <body>
-    <a href="/" class="home-button" style="margin-left: 20px;">Go Home</a>
     <div class="container">
         <h2>Login</h2>
-        <div class="form-container"> <!-- Nouveau conteneur pour la bordure -->
+        <div class="form-container">
             <form action="/login" method="post">
                 <input type="text" name="username" placeholder="Username" required>
                 <input type="password" name="password" placeholder="Password" required>

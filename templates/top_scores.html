@@ -2,8 +2,18 @@
 <html>
 <head>
     <title>Top Scores</title>
+    <link rel="stylesheet" href="static/index.css">
 </head>
 <body>
+    <div class="header">
+        <div>
+            <button onclick="location.href='/home';" class="home-button">Back to home</button>
+            connecté en tant que:
+            <b>{{ session['username'] }}</b>
+        </div>
+        <button onclick="location.href='/top_scores';" class="classement-button">Classement</button>
+        <button onclick="location.href='/logout';" class="logout-button">Logout</button>
+    </div>
     <h1>Top Scores</h1>
     <ul>
         {% for score in scores %}

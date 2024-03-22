@@ -6,13 +6,10 @@ let yCoord = 0;
 let snakeSize = 20;
 let appleX = 0;
 let appleY = 0;
-let yellowX = 0;
-let yellowY = 0;
 let xVelocity = 0;
 let yVelocity = 0;
 let score = 0;
-let snake = [];
-let isYellow = false;
+let index = [];
 
 document.addEventListener('DOMContentLoaded', function() {
     const startBtn = document.getElementById('start');
@@ -57,18 +54,13 @@ function init() {
     ctx = canvas.getContext('2d');
     createApple();
     xVelocity = snakeSize;
-    snake = JSON.parse(localStorage.getItem('snake')) || [{x: canvas.width / 2, y: canvas.height / 2}];
+    index = JSON.parse(localStorage.getItem('snake')) || [{x: canvas.width / 2, y: canvas.height / 2}];
     setInterval(game, delay);
 }
 
 function createApple() {
     appleX = Math.floor(Math.random() * (canvas.width / snakeSize)) * snakeSize;
     appleY = Math.floor(Math.random() * (canvas.height / snakeSize)) * snakeSize;
-}
-
-function createYellow() {
-    yellowX = Math.floor(Math.random() * (canvas.width / snakeSize)) * snakeSize;
-    yellowY = Math.floor(Math.random() * (canvas.height / snakeSize)) * snakeSize;
 }
 
 function paint() {
@@ -96,30 +88,22 @@ function paint() {
     ctx.fillRect(appleX, appleY, snakeSize, snakeSize);
 
     ctx.fillStyle = 'green';
-    for (let i = 0; i < snake.length; i++) {
-        ctx.fillRect(snake[i].x, snake[i].y, snakeSize, snakeSize);
-    }
-    ctx.fillStyle = 'yellow';
-    if (score == 10 && !isYellow){
-        ctx.fillRect(yellowX, yellowY, snakeSize, snakeSize);
-        isYellow = true
+    for (let i = 0; i < index.length; i++) {
+        ctx.fillRect(index[i].x, index[i].y, snakeSize, snakeSize);
     }
 }
 
 function move() {
     xCoord += xVelocity;
     yCoord += yVelocity;
-    if(score == 10) {
-        createYellow();
-    }
 
     if (xCoord < 0 || xCoord >= canvas.width || yCoord < 0 || yCoord >= canvas.height) {
         gameOver();
         return;
     }
 
-    for (let i = 0; i < snake.length; i++) {
-        if (xCoord === snake[i].x && yCoord === snake[i].y) {
+    for (let i = 0; i < index.length; i++) {
+        if (xCoord === index[i].x && yCoord === index[i].y) {
             gameOver();
             return;
         }
@@ -128,34 +112,11 @@ function move() {
     if (xCoord === appleX && yCoord === appleY) {
         score++;
         createApple();
-        snake.push({x: xCoord, y: yCoord});
+        index.push({x: xCoord, y: yCoord});
     } else {
-        snake.shift();
-        snake.push({x: xCoord, y: yCoord});
+        index.shift();
+        index.push({x: xCoord, y: yCoord});
     }
-
-    if (xCoord === yellowX && yCoord === yellowY) {    
-        const interval = setInterval(function() {
-            let appleCount = 3;
-            while (appleCount > 0) {
-                let newX = Math.floor(Math.random() * (canvas.width / snakeSize)) * snakeSize;
-                let newY = Math.floor(Math.random() * (canvas.height / snakeSize)) * snakeSize;
-                if (!checkCollision(newX, newY)) {
-                    appleCount--;
-                    ctx.fillStyle = 'red';
-                    ctx.fillRect(newX, newY, snakeSize, snakeSize);
-                }
-            }
-    
-            canvas.style.backgroundColor = 'yellow';
-    
-            setTimeout(function() {
-                canvas.style.backgroundColor = 'white';
-                clearInterval(interval);
-            }, 15000);
-        }, 1);
-    }
-    
 }
 
 function game() {
@@ -187,5 +148,5 @@ function gameOver() {
 
 
 window.addEventListener('unload', () => {
-    localStorage.setItem('snake', JSON.stringify(snake));
+    localStorage.setItem('index', JSON.stringify(index));
 });

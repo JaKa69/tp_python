@@ -1,0 +1,101 @@
+canvas {
+    border: 1px solid black;
+}
+#score {
+    font-size: 24px;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+}
+.logout-button {
+    background-color: #f44336;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+.content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+.scores-table {
+    border-collapse: collapse;
+    width: 35%;
+}
+.scores-table th, .scores-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    width: 50%;
+    text-align: left;
+}
+.scores-table th {
+    background-color: #04AA6D;
+    color: white;
+}
+.start-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+.home-button {
+    padding: 10px;
+    margin-right: 5px;
+    background-color: #007bff;
+    color: white;
+    border: 2px solid black;
+    border-radius: 15px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.classement-button {
+    background-color: #28a745;
+    border-color: #218838;
+}
+
+.logout-button {
+    background-color: #dc3545;
+    border-color: #bd2130;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    margin-top: -1px;
+    padding: 10px;
+    font-size: 18px;
+}
+
+.games-title {
+    text-align: center !important;
+}

@@ -32,6 +32,55 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
+@app.route("/")
+def init():
+    if 'username' in session:
+        return redirect(url_for("home"))
+    return redirect(url_for('login'))
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password'].encode('utf-8')
+        userInDb = query_db('SELECT * FROM user WHERE username = ?', [username], one=True)
+        if userInDb is None:
+            flash('Invalid username or password')
+        else:
+            hashed_pw = userInDb['password'].encode('utf-8')
+            if bcrypt.checkpw(password, hashed_pw):
+                session['username'] = username
+                session['user_id'] = userInDb['id']
+                return redirect(url_for('home'))
+            else:
+                flash('Invalid username or password')
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
+@app.route("/register", methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = hash_password(request.form['password'])
+        userInDb = query_db('select * from user where username = ?', [username], one=True)
+        if userInDb is None:
+            userSaved = query_db('INSERT INTO user (username, password) VALUES (?, ?);', [username, password])
+            get_db().commit()
+            return render_template("register.html")
+        else:
+            flash('username already used')
+    return render_template("register.html")
+
+@app.route("/home")
+def home():
+    db = get_db()
+    topScores = db.execute(
+        'SELECT user.username, score.score FROM score JOIN user ON score.user_id = user.id ORDER BY score.score DESC LIMIT 10').fetchall()
+    return render_template("home.html", scores=topScores)
 
 @app.route("/add_score", methods=["POST"])
 def add_score():
@@ -53,58 +102,6 @@ def top_scores():
     topScores = db.execute('SELECT user.username, score.score FROM score JOIN user ON score.user_id = user.id ORDER BY score.score DESC LIMIT 10').fetchall()
     return render_template("top_scores.html", scores=topScores)
 
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password'].encode('utf-8')
-        userInDb = query_db('SELECT * FROM user WHERE username = ?', [username], one=True)
-        if userInDb is None:
-            flash('Invalid username or password')
-        else:
-            hashed_pw = userInDb['password'].encode('utf-8')
-            if bcrypt.checkpw(password, hashed_pw):
-                session['username'] = username
-                session['user_id'] = userInDb['id']
-                return redirect(url_for('home'))
-            else:
-                flash('Invalid username or password')
-    return render_template('login.html')
-
-
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('login'))
-
-@app.route('/snake')
-def snake():
-    return render_template('snake.html')
-
-@app.route("/register", methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = hash_password(request.form['password'])
-        userInDb = query_db('select * from user where username = ?', [username], one=True)
-        if userInDb is None:
-            userSaved = query_db('INSERT INTO user (username, password) VALUES (?, ?);', [username, password])
-            get_db().commit()
-            return render_template("register.html")
-        else:
-            flash('username already used')
-    return render_template("register.html")
-
-@app.route("/")
-def init():
-    if 'username' in session:
-        return redirect(url_for("home"))
-    return redirect(url_for('login'))
-
-@app.route("/home")
-def home():
-    return render_template("home.html")
 
 if not Path(DATABASE).exists():
     with app.app_context():
