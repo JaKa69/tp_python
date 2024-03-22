@@ -94,6 +94,18 @@ def home():
     return render_template("home.html", scores=topScores)
 
 
+@app.route('/profile')
+def profile():
+    db = get_db()
+    username = request.args.get('username', session['username'])
+    scores = db.execute(
+        'SELECT score.score, score.date FROM score JOIN user ON score.user_id = user.id WHERE user.username = ? ORDER BY score.score DESC',
+        [username]
+    ).fetchall()
+
+    return render_template('profile.html', username=username, scores=scores)
+
+
 @app.route("/add_score", methods=["POST"])
 def add_score():
     if 'username' not in session:
@@ -103,7 +115,9 @@ def add_score():
     user_id = session['user_id']
 
     db = get_db()
-    db.execute('INSERT INTO score (user_id, score) VALUES (?, ?)', [user_id, score])
+    db.execute(
+        'INSERT INTO score (user_id, score) VALUES (?, ?)',
+        [user_id, score])
     db.commit()
 
     return "Score added successfully", 200
@@ -113,7 +127,8 @@ def add_score():
 def top_scores():
     db = get_db()
     topScores = db.execute(
-        'SELECT user.username, score.score FROM score JOIN user ON score.user_id = user.id ORDER BY score.score DESC LIMIT 10').fetchall()
+        'SELECT user.username, score.score FROM score JOIN user ON score.user_id = user.id ORDER BY score.score DESC LIMIT 10'
+    ).fetchall()
     return render_template("top_scores.html", scores=topScores)
 
 

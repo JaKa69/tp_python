@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Profil de l'utilisateur</title>
+    <link rel="stylesheet" href="/static/index.css"> <!-- Assurez-vous d'avoir un fichier CSS pour styliser votre page -->
+</head>
+<body>
+    <div class="header">
+        <div>
+            <button onclick="location.href='/home';" class="home-button">Back to home</button>
+            connecté en tant que:
+            <b><a href="/profile">{{ session['username'] }}</a></b>
+        </div>
+        <button onclick="location.href='/top_scores';" class="classement-button">Classement</button>
+        <button onclick="location.href='/logout';" class="logout-button">Logout</button>
+    </div>
+    <div class="container">
+        <h1>Profil de l'utilisateur</h1>
+        <div class="user-info">
+            <p>Nom d'utilisateur : {{ username }}</p>
+            {% if username == session['username'] %}
+                <button onclick="location.href='/change_password';">Changer le mot de passe</button>
+            {% endif %}
+        </div>
+        <h2>Scores des parties</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Score</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for score in scores %}
+                <tr>
+                    <td>{{ score.score }}</td>
+                    <td>{{ score.date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

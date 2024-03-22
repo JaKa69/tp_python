@@ -9,7 +9,7 @@
         <div>
             <button onclick="location.href='/home';" class="home-button">Back to home</button>
             connecté en tant que:
-            <b>{{ session['username'] }}</b>
+            <b><a href="/profile">{{ session['username'] }}</a></b>
         </div>
         <button onclick="location.href='/top_scores';" class="classement-button">Classement</button>
         <button onclick="location.href='/logout';" class="logout-button">Logout</button>
@@ -17,7 +17,7 @@
     <h1>Top Scores</h1>
     <ul>
         {% for score in scores %}
-            <li>{{ score.username }}: {{ score.score }}</li>
+            <li><a href="/profile?username={{ score.username }}">{{ score.username }}</a>: {{ score.score }}</li>
         {% endfor %}
     </ul>
 </body>
