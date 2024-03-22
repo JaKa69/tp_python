@@ -20,11 +20,15 @@
     </div>
     <h2>Notifications</h2>
     {% for notification in notifications %}
-        <div class="notification">
+        <div class="notification {% if notification.read == 0 %}unread{% endif %}">
             <p>{{ notification.message }} - {{ notification.timestamp }}</p>
             <form action="/mark_notification_as_read" method="post">
                 <input type="hidden" name="notification_id" value="{{ notification.id }}">
                 <button type="submit">Marquer comme lu</button>
+            </form>
+            <form action="/delete_notification" method="post">
+                <input type="hidden" name="notification_id" value="{{ notification.id }}">
+                <button type="submit">Supprimer</button>
             </form>
         </div>
     {% endfor %}

@@ -127,3 +127,34 @@ ul li {
     flex-direction: row;
     justify-content: space-between;
 }
+
+.notification {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 5px;
+
+    form {
+        margin-top: 10px;
+    }
+
+    button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 15px;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+}
+
+.unread {
+    font-weight: bold;
+    background-color: #ddd;
+}

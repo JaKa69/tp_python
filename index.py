@@ -201,7 +201,7 @@ def notifications():
 
     db = get_db()
     user_id = session['user_id']
-    notifications = db.execute('SELECT id, message, timestamp FROM notification WHERE user_id = ? ORDER BY timestamp DESC', (user_id,)).fetchall()
+    notifications = db.execute('SELECT id, message, read, timestamp FROM notification WHERE user_id = ? ORDER BY timestamp DESC', (user_id,)).fetchall()
     return render_template('notifications.html', notifications=notifications)
 
 @app.route('/mark_notification_as_read', methods=['POST'])
@@ -210,6 +210,20 @@ def mark_notification_as_read():
     db = get_db()
     db.execute('UPDATE notification SET read = 1 WHERE id = ?', (notification_id,))
     db.commit()
+    return redirect(url_for('notifications'))
+
+
+@app.route('/delete_notification', methods=['POST'])
+def delete_notification():
+    notification_id = request.form.get('notification_id')
+    if notification_id:
+        db = get_db()
+        db.execute('DELETE FROM notification WHERE id = ?', (notification_id,))
+        db.commit()
+        flash('Notification supprimée avec succès.')
+    else:
+        flash('Erreur lors de la suppression de la notification.')
+
     return redirect(url_for('notifications'))
 
 
