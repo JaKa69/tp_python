@@ -1,6 +1,5 @@
 import sqlite3
 from pathlib import Path
-
 from flask import Flask, render_template, g, request, flash, session, redirect, url_for
 
 app = Flask(__name__)
@@ -44,8 +43,12 @@ def login():
 
 @app.route('/logout')
 def logout():
-    session.pop('username', None)
-    return redirect(url_for('index'))
+    session.clear()
+    return redirect(url_for('login'))
+
+@app.route('/snake')
+def snake():
+    return render_template('snake.html')
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
@@ -59,7 +62,7 @@ def register():
             return render_template("register.html")
         else:
             flash('username already used')
-    return redirect(url_for("home"))
+    return render_template("register.html")
 
 @app.route("/")
 def init():
@@ -67,6 +70,9 @@ def init():
         return redirect(url_for("home"))
     return redirect(url_for('login'))
 
+@app.route("/home")
+def home():
+    return render_template("home.html")
 
 if not Path(DATABASE).exists():
     with app.app_context():

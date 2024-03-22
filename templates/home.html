@@ -6,21 +6,23 @@
     <title>Welcome</title>
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
         }
-        .welcome {
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-        .login-button {
-            margin-right: 15px;
-            display: inline-block;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
             background-color: #007bff;
+            color: white;
+        }
+        .logout-button {
+            background-color: #f44336;
             color: white;
             padding: 10px 20px;
             text-decoration: none;
@@ -28,17 +30,55 @@
             border: none;
             cursor: pointer;
         }
-        .buttons {
+        .content {
+            flex-grow: 1;
             display: flex;
-            flex-direction: row;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .scores-table {
+            border-collapse: collapse;
+            width: 50%;
+        }
+        .scores-table th, .scores-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .scores-table th {
+            background-color: #04AA6D;
+            color: white;
+        }
+        .start-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="welcome">Welcome!</div>
-    <div class="buttons">
-        <button onclick="location.href='login';" class="login-button">Sign in</button>
-        <button onclick="location.href='register';" class="login-button">Sign up</button>
+    <div class="header">
+        <div>{{ session['username'] }}</div>
+        <button onclick="location.href='/logout';" class="logout-button">Logout</button>
+    </div>
+    <div class="content">
+        <table class="scores-table">
+            <tr>
+                <th>Username</th>
+                <th>Score</th>
+            </tr>
+            {% for score in scores %}
+            <tr>
+                <td>{{ score.username }}</td>
+                <td>{{ score.score }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <button onclick="location.href='/snake';" class="start-button">Start</button>
     </div>
 </body>
 </html>
