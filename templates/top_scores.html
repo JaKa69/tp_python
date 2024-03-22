@@ -14,7 +14,7 @@
         <button onclick="location.href='/top_scores';" class="classement-button">Classement</button>
         <button onclick="location.href='/logout';" class="logout-button">Logout</button>
     </div>
-    <h1>Top Scores</h1>
+    <h1>Top 10 Scores</h1>
     <ul>
         {% for score in scores %}
             <li><a href="/profile?username={{ score.username }}">{{ score.username }}</a>: {{ score.score }}</li>

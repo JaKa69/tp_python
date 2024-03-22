@@ -132,6 +132,33 @@ def top_scores():
     return render_template("top_scores.html", scores=topScores)
 
 
+@app.route('/change_password', methods=['GET', 'POST'])
+def change_password():
+    if request.method == 'POST':
+        username = request.form['username']
+        current_password = request.form['current_password']
+        new_password = request.form['new_password']
+        confirm_new_password = request.form['confirm_new_password']
+
+        if new_password != confirm_new_password:
+            flash('Les nouveaux mots de passe ne correspondent pas.')
+            return redirect(url_for('change_password'))
+
+        db = get_db()
+        user = db.execute('SELECT * FROM user WHERE username = ?', (username,)).fetchone()
+
+        if user and bcrypt.checkpw(current_password.encode('utf-8'), user['password'].encode('utf-8')):
+            hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            db.execute('UPDATE user SET password = ? WHERE username = ?', (hashed_password, username))
+            db.commit()
+            flash('Le mot de passe a été changé avec succès.')
+            return redirect(url_for('login'))
+        else:
+            flash('Nom d’utilisateur ou mot de passe actuel incorrect.')
+
+    return render_template('change_password.html')
+
+
 if not Path(DATABASE).exists():
     with app.app_context():
         db = get_db()
