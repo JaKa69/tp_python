@@ -166,9 +166,25 @@ function game() {
 
 function gameOver() {
     clearInterval();
-    alert(`Game Over! Your score is ${score}`);
-    window.location.reload();
+    // Envoie le score au serveur
+    fetch('/add_score', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `score=${score}`,
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log('Success:', data);
+        alert(`Game Over! Your score is ${score}`);
+        window.location.reload();
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
 }
+
 
 window.addEventListener('unload', () => {
     localStorage.setItem('snake', JSON.stringify(snake));

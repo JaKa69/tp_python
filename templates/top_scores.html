@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Top Scores</title>
+</head>
+<body>
+    <h1>Top Scores</h1>
+    <ul>
+        {% for score in scores %}
+            <li>{{ score.username }}: {{ score.score }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

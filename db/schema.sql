@@ -6,5 +6,13 @@ CREATE TABLE user (
   password TEXT NOT NULL
 );
 
+CREATE TABLE score (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    score INTEGER,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES user(id)
+);
+
 INSERT INTO user (username, password)
-    VALUES ('admin', 'admin');
+    VALUES ('admin', '$2b$12$kg81ONd.6H3W/Nrf3.Ku6O.NY2zHiFIBcrCqmNLcMtCiCyO37sQgu');

@@ -1,5 +1,6 @@
 import sqlite3
 from pathlib import Path
+import bcrypt
 from flask import Flask, render_template, g, request, flash, session, redirect, url_for
 
 app = Flask(__name__)
@@ -20,26 +21,57 @@ def query_db(query, args=(), one=False):
     cur.close()
     return (rv[0] if rv else None) if one else rv
 
+def hash_password(password):
+   password_bytes = password.encode('utf-8')
+   hashed_bytes = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
+   return hashed_bytes.decode('utf-8')
+
 @app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
 
+
+@app.route("/add_score", methods=["POST"])
+def add_score():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    score = request.form['score']
+    user_id = session['user_id']
+
+    db = get_db()
+    db.execute('INSERT INTO score (user_id, score) VALUES (?, ?)', [user_id, score])
+    db.commit()
+
+    return "Score added successfully", 200
+
+@app.route("/top_scores")
+def top_scores():
+    db = get_db()
+    topScores = db.execute('SELECT user.username, score.score FROM score JOIN user ON score.user_id = user.id ORDER BY score.score DESC LIMIT 10').fetchall()
+    return render_template("top_scores.html", scores=topScores)
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
-        password = request.form['password']
-        userInDb = query_db('select * from user where username = ?', [username], one=True)
+        password = request.form['password'].encode('utf-8')
+        userInDb = query_db('SELECT * FROM user WHERE username = ?', [username], one=True)
         if userInDb is None:
             flash('Invalid username or password')
-        if username == userInDb['username'] and password == userInDb['password']:
-            session['username'] = username
-            return redirect(url_for('home'))
         else:
-            flash('Invalid username or password')
+            hashed_pw = userInDb['password'].encode('utf-8')
+            if bcrypt.checkpw(password, hashed_pw):
+                session['username'] = username
+                session['user_id'] = userInDb['id']
+                return redirect(url_for('home'))
+            else:
+                flash('Invalid username or password')
     return render_template('login.html')
+
 
 @app.route('/logout')
 def logout():
@@ -54,7 +86,7 @@ def snake():
 def register():
     if request.method == 'POST':
         username = request.form['username']
-        password = request.form['password']
+        password = hash_password(request.form['password'])
         userInDb = query_db('select * from user where username = ?', [username], one=True)
         if userInDb is None:
             userSaved = query_db('INSERT INTO user (username, password) VALUES (?, ?);', [username, password])
