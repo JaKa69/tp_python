@@ -108,9 +108,6 @@ def profile():
 
 @app.route("/add_score", methods=["POST"])
 def add_score():
-    if 'username' not in session:
-        return redirect(url_for('login'))
-
     score = request.form['score']
     user_id = session['user_id']
 
@@ -120,7 +117,7 @@ def add_score():
         [user_id, score])
     db.commit()
 
-    return "Score added successfully", 200
+    return redirect(url_for('home'))
 
 
 @app.route("/top_scores")
