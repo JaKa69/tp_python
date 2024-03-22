@@ -99,3 +99,9 @@ ul li {
 .games-title {
     text-align: center !important;
 }
+
+.padding-game {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

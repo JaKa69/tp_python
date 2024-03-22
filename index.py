@@ -8,6 +8,7 @@ app.secret_key = '8A8kWA0gTvi72Qw1Xs5KLuWF06vZjRhdsFfJ9CDTGGi8XI7MHyX4lgWQGhK0ga
 
 DATABASE = 'db/database.db'
 
+
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
@@ -15,16 +16,19 @@ def get_db():
     db.row_factory = sqlite3.Row
     return db
 
+
 def query_db(query, args=(), one=False):
     cur = get_db().execute(query, args)
     rv = cur.fetchall()
     cur.close()
     return (rv[0] if rv else None) if one else rv
 
+
 def hash_password(password):
-   password_bytes = password.encode('utf-8')
-   hashed_bytes = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
-   return hashed_bytes.decode('utf-8')
+    password_bytes = password.encode('utf-8')
+    hashed_bytes = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
+    return hashed_bytes.decode('utf-8')
+
 
 @app.teardown_appcontext
 def close_connection(exception):
@@ -32,11 +36,13 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
+
 @app.route("/")
 def init():
     if 'username' in session:
         return redirect(url_for("home"))
     return redirect(url_for('login'))
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -56,10 +62,12 @@ def login():
                 flash('Invalid username or password')
     return render_template('login.html')
 
+
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('login'))
+
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
@@ -75,12 +83,16 @@ def register():
             flash('username already used')
     return render_template("register.html")
 
+
 @app.route("/home")
 def home():
     db = get_db()
+    username = session['username']
     topScores = db.execute(
-        'SELECT user.username, score.score FROM score JOIN user ON score.user_id = user.id ORDER BY score.score DESC LIMIT 10').fetchall()
+        'SELECT user.username, score.score FROM score JOIN user ON score.user_id = user.id  WHERE user.username = ? ORDER BY score.score DESC LIMIT 10',
+        [username]).fetchall()
     return render_template("home.html", scores=topScores)
+
 
 @app.route("/add_score", methods=["POST"])
 def add_score():
@@ -96,10 +108,12 @@ def add_score():
 
     return "Score added successfully", 200
 
+
 @app.route("/top_scores")
 def top_scores():
     db = get_db()
-    topScores = db.execute('SELECT user.username, score.score FROM score JOIN user ON score.user_id = user.id ORDER BY score.score DESC LIMIT 10').fetchall()
+    topScores = db.execute(
+        'SELECT user.username, score.score FROM score JOIN user ON score.user_id = user.id ORDER BY score.score DESC LIMIT 10').fetchall()
     return render_template("top_scores.html", scores=topScores)
 
 
