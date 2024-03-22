@@ -10,6 +10,7 @@ let xVelocity = 0;
 let yVelocity = 0;
 let score = 0;
 let index = [];
+let isGameOver = false;
 
 document.addEventListener('DOMContentLoaded', function() {
     const startBtn = document.getElementById('start');
@@ -126,6 +127,8 @@ function game() {
 }
 
 function gameOver() {
+    if (isGameOver) return;
+    isGameOver = true;
     clearInterval();
     // Envoie le score au serveur
     fetch('/add_score', {
@@ -136,8 +139,7 @@ function gameOver() {
         body: `score=${score}`,
     })
     .then(response => response.text())
-    .then(data => {
-        console.log('Success:', data);
+    .then(() => {
         alert(`Game Over! Your score is ${score}`);
         window.location.reload();
     })

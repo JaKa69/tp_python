@@ -29,6 +29,7 @@ def hash_password(password):
     hashed_bytes = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
     return hashed_bytes.decode('utf-8')
 
+
 def check_and_notify_new_highscore(score, user_id):
     db = get_db()
     highest_score = db.execute('SELECT MAX(score) as max_score FROM score').fetchone()
@@ -113,7 +114,7 @@ def home():
     username = session['username']
     unread_notifications_count = get_unread_notifications_count()
     topScores = db.execute(
-        'SELECT user.username, score.score FROM score JOIN user ON score.user_id = user.id  WHERE user.username = ? ORDER BY score.score DESC LIMIT 10',
+        'SELECT user.username, score.score FROM score JOIN user ON score.user_id = user.id  WHERE user.username = ? ORDER BY score.date DESC LIMIT 10',
         [username]).fetchall()
     return render_template("home.html", scores=topScores, unread_notifications_count=unread_notifications_count)
 
